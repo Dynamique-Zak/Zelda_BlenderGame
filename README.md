@@ -44,41 +44,41 @@ I haven't packed textures and other files in blends files. If blends can't find 
 
 ##Gamepad
 
-    Deplacements : Arrow Keys | Joystick analogique
-    Z Button (Targeting mode) : W | R2
-    A Button : X | Left Button
-    Attack Button : C | Bottom Button
+	Deplacements : Arrow Keys | Joystick analogique
+	Z Button (Targeting mode) : W | R2
+	A Button : X | Left Button
+	Attack Button : C | Bottom Button
 
 
 ##Updates
 
-    Mouvements sur la vidéo, mais depuis j'ai enlevé les mouvements suivants pour les re-développer:
-        Push sur les bloc
-        La montée sur les bloc
-    Transition entre map
+	Mouvements sur la vidéo, mais depuis j'ai enlevé les mouvements suivants pour les re-développer:
+	Push sur les bloc
+	La montée sur les bloc
+	Transition entre map
 
-##"08 Janvier 2016
+##08 Janvier 2016
 
-    Path Follow (Suit un chemin, comme pour changer de map)
-    Système de dialogue
-    Système de menu
-    Gestion de logic.globalDict pour charger les données à chaque transition de map
-    Intégration pygame.joystick pour detecter les manettes
+	Path Follow (Suit un chemin, comme pour changer de map)
+	Système de dialogue
+	Système de menu
+	Gestion de logic.globalDict pour charger les données à chaque transition de map
+	Intégration pygame.joystick pour detecter les manettes
 
 ###09 Janvier 2016
 
-    Rotation de joueur adapté au joystick et à la camera
-    Rotation caméra libre avec le joystick droit
-    Début du Z-Targeting
-    Amélioration de l'armature du joueur et certaines animations on été améliorés (il en reste encore) par luky que je remerci sur la passage
-    Sort de l'eau à partir d'un corniche ou du sol
-    Re-Développement de la gestion des steps sounds (Bruitage des pieds au sol)
-    Interaction avec des pancartes (Affiche une messageBox)
+	Rotation de joueur adapté au joystick et à la camera
+	Rotation caméra libre avec le joystick droit
+	Début du Z-Targeting
+	Amélioration de l'armature du joueur et certaines animations on été améliorés (il en reste encore) par luky que je remerci sur la passage
+	Sort de l'eau à partir d'un corniche ou du sol
+	Re-Développement de la gestion des steps sounds (Bruitage des pieds au sol)
+	Interaction avec des pancartes (Affiche une messageBox)
 
 ###12 Janvier 2016
 
-    Debut des applications des méthodes avec callback ou décorateur. Exemple:
-
+	Debut des applications des méthodes avec callback ou décorateur. Exemple:
+```
     def respectGroundRule(self, function):
       from link_scripts.StarterState import start_fallState
 
@@ -90,8 +90,19 @@ I haven't packed textures and other files in blends files. If blends can't find 
               # go to fall
               start_fallState(self)
               return False
+```
+	Curseur du viseur ajouter, situé sur la scene HUD, position adapté aux coordonnées de l'objet ciblé dans la scene du joueur. (Utilisation de la methode getScreenPosition(monObjet) de la class KX_Camera)
 
-    Curseur du viseur ajouter, situé sur la scene HUD, position adapté aux coordonnées de l'objet ciblé dans la scene du joueur. (Utilisation de la methode getScreenPosition(monObjet) de la class KX_Camera)
+###18 Janvier 2016
+	Système d'attaque
+	Système Hits
+	Strike Effect
+	MiniMap (premier test)
+
+###A faire (en priorité)
+	Gestion d'une caméra intélligente (Obstacle, etc)
+	Le fall down lorsque le joueur est coincé
+	Finir/Refaire les animations courantes du personnage
 
 ###Bugs reconnues
 
