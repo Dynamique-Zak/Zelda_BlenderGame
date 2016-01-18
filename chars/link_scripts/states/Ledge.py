@@ -11,7 +11,7 @@ def pasteToLedge(self):
 
 	#set_pos
 	z_pos = 0
-	if ( self.physic.detectLedgeGround(3) ):
+	if ( self.tester.detectLedgeGround(3) ):
 		z_pos = self.ledgeGroundData[0][2] - 1.2
 	else:
 		z_pos = self.player.ledgeData[2].worldPosition[2]
@@ -78,7 +78,7 @@ def grapLedgeState(self):
 		return
 
 	# if have a ground near ledge
-	if ( self.physic.detectLedgeGround() ):
+	if ( self.tester.detectLedgeGround() ):
 		# detect if we want climb with up array key
 		if ( self.gamepad.isUpPressed() ):
 			start_climbLedgeState(self)

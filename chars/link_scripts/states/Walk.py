@@ -1,4 +1,5 @@
 from link_scripts.PlayerConstants import PlayerState
+from link_scripts.states.Hits import start_hitState
 from link_scripts.StarterState import start_fallState
 from link_scripts.states.Water import start_swimState
 
@@ -10,10 +11,19 @@ def walkForce(self, forward_force):
 	else:
 		return False
 
+def end_walkState(self):
+	# deactivate the arm rig layer
+	self.rig.stopArmLayer()
+
 def walkState(self):
 	# get forward force
 	forward_force = self.getForwardForce()
 	speedAnim = 1.0#abs(self.gamepad.getJoyAxis1Value())
+
+	# If detect enemy damage
+	if (self.tester.detectEnemyDamage()):
+		start_hitState(self)
+		return
 
 	# If detect water
 	if (self.tester.detectWater()):
@@ -22,7 +32,7 @@ def walkState(self):
 		# start swim state
 		start_swimState(self)
 	# else we can move or wait
-	elif ( self.physic.detectGround() ):
+	elif ( self.respectGroundRule(end_walkState(self)) ):
 		if (self.tester.switchLevel()):
 			# cancel state
 			return

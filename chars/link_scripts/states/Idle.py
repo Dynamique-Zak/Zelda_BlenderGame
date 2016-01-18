@@ -1,9 +1,12 @@
 from bge import logic
 from link_scripts.PlayerConstants import PlayerState
 from link_scripts.states.Attack import start_basicSwordAttack1State
+from link_scripts.states.Climb import start_climbGroundState
+from link_scripts.states.Door import start_openDoorState
+from link_scripts.states.Hits import start_hitState
 from link_scripts.states.Interaction import start_interactionState
 from link_scripts.states.PickThrow import start_pickObjectState, start_throwObjectState
-from link_scripts.StarterState import start_firstLookView, start_openDoorState, start_ladderState
+from link_scripts.StarterState import start_firstLookView, start_ladderState
 
 def idleState(self):
 	# stop movement
@@ -22,6 +25,18 @@ def idleState(self):
 			return
 		else:
 			self.rig.playPick()
+
+	# If detect enemy damage
+	if (self.tester.detectEnemyDamage()):
+		start_hitState(self)
+		return
+
+	# If detect ledge ground from ground
+	if (self.tester.detectLedgeGroundFromGround()):
+		if (self.gamepad.isActionPressed()):
+			# go to climb
+			start_climbGroundState(self)
+			return
 
 	# If detect pckable object
 	if ( self.tester.detectObjectToPickUp() and self.onPick == False ):
@@ -73,3 +88,8 @@ def idleState(self):
 				self.activeArmedMode()
 			else:
 				start_basicSwordAttack1State(self)
+		# range sword an shield
+		if (self.armed == True):
+			if ( self.gamepad.isActionPressed() ):
+				self.deactiveArmedMode()
+				

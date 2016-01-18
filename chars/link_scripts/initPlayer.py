@@ -64,6 +64,7 @@ def initPlayer(cont):
 	# start with fall state
 	own.switchState(PlayerState.FALL_STATE)
 
+	logic.player = own
 	logic.globalDict['player'] = own
 
 def step2(cont):

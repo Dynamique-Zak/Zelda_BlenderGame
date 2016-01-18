@@ -46,8 +46,11 @@ class Player(types.KX_GameObject):
 		self.fallTime = 0.0
 		self.stateTime = 0.0
 		self.frameCounter = 0
+		self.shufferedDamage = 0.0
+		self.comboAttack = 0
 		self.trackTarget = None
 		self.targetObject = None
+		self.lastGroundPos = [0, 0, 0]
 		self.ledgeData = [None, None, None]
 		self.ledgeGroundData = [None, None, None]
 		self.ladderData = [None, None]
@@ -118,29 +121,41 @@ class Player(types.KX_GameObject):
 	def respectGroundRule(self, function):
 		from link_scripts.StarterState import start_fallState
 
-		if (self.physic.detectGround()):
+		if (self.tester.detectGround()):
 			return True
 		else:
-			function(self)
+			if (function != None):
+				function(self)
 			# go t ofall
 			start_fallState(self)
 			return False
 
-	def playerHUD(self):
-		return None
+	def isAlive():
+		return ( self.heartContainer.notHaveHeart() )
+
+	def applyDamage(self):
+		damage = self.shufferedDamage
+		self.heartContainer.loseHeart(damage)
 
 	def playStateTime(self, limit):
 		""" Play state time with a limit
 		"""
 		if (self.stateTime < limit):
 			self.stateTime += 0.1
+			return False
 		else:
 			self.stateTime = limit
+			return True
 
 	def activeArmedMode(self):
 		# switch weapon visibility
 		self.fightManager.switchSwordAndShield()
 		self.armed = True
+
+	def deactiveArmedMode(self):
+		# switch weapon visibility
+		self.fightManager.switchSwordAndShield()
+		self.armed = False
 
 	def switchState(self, next_etat):
 		# if the next state is the idle since applic reset same var
@@ -166,6 +181,8 @@ class Player(types.KX_GameObject):
 			cont.activate(self.track_orientActuator)
 
 	def main(self, cont):
+		self.gamepad.updateJoystick()
+
 		# update state management
 		managePlayerState(self)
 
@@ -173,6 +190,8 @@ class Player(types.KX_GameObject):
 		if (self.targetManager.active):
 			self.targetManager.trackTargetObject(cont)
 		else:
+			# Find targetable object
+			self.targetManager.findObject()
 			# update axis orient
 			cont.deactivate('track_orient')
 			self.orientManager.updateOrientController(self.worldPosition, logic.globalDict['cam_player'].worldOrientation.to_euler())
@@ -188,5 +207,9 @@ class Player(types.KX_GameObject):
 		# cam view
 		self.camManager.cameraViewControl(self.gamepad)
 
+		# Update mini map
+		logic.playerHUD.updateMiniMap()
+
 		# update global dic data
+		logic.player = self
 		logic.globalDict['player'] = self

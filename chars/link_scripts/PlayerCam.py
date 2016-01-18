@@ -1,3 +1,5 @@
+import mathutils
+
 class PlayerCam:
 
 	def __init__(self, player, camera):
@@ -40,6 +42,13 @@ class PlayerCam:
 		# apply transform
 		self.cam.worldPosition = self.player.first_view_obj.worldPosition
 		self.cam.orientation = self.player.first_view_obj.orientation
+
+	def setCameraAfterDoorClose(self):
+		player_pos = self.player.worldPosition
+		pos = mathutils.Vector([5, -2, 0])
+		pos.rotate(self.player.orientation)
+		new_pos = pos + player_pos
+		self.cam.worldPosition = new_pos
 
 	def cameraViewControl(self, gamepad):
 		axis = gamepad.getJoyAxis2()

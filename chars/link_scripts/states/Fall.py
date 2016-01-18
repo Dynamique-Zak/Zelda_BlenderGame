@@ -23,6 +23,16 @@ def fallControl(self):
 	self.linearMove(LeftRight, 0)
 	self.linearMove(UpDown, 1)
 
+def respawnToGround(self):
+	self.stopMovement()
+	# stop orientation
+	self.orientManager.stopOrientation(self)
+	self.worldPosition = self.lastGroundPos
+	self.worldPosition[2] = self.lastGroundPos[2] + + 1.2
+	self.grounded = True
+	self.fallTime = 0.0
+	self.switchState(PlayerState.IDLE_STATE)
+
 def fallState(self):
 	# If detect water
 	if (self.tester.detectWater()):
@@ -35,8 +45,13 @@ def fallState(self):
 		# cancel method
 		return
 
+	# If detect black hole
+	if (self.tester.detectBlackHole() ):
+		respawnToGround(self)
+		return
+
 	# if touch the ground
-	ground, point, normal = self.physic.groundRay()
+	ground, point, normal = self.tester.groundRay()
 	if (ground and self.fallTime > 0.3):
 		print("touch the ground")
 		# set grounded
@@ -47,7 +62,7 @@ def fallState(self):
 		self.switchState(PlayerState.LAND_STATE)
 	else:
 		# if detect the ledge and ledgeCanceled not true
-		if (self.physic.detectLedge() and not self.ledgeCanceled):
+		if (self.tester.detectLedge() and not self.ledgeCanceled):
 			# do ledge
 			self.fallTime = 0.0
 			# go to ledge state

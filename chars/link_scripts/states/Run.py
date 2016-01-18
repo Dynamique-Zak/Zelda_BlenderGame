@@ -1,5 +1,6 @@
 from bge import logic
 from link_scripts.PlayerConstants import PlayerState
+from link_scripts.states.Hits import start_hitState
 from link_scripts.states.Roll import start_rollState
 from link_scripts.states.Water import start_swimState
 from link_scripts.StarterState import start_levelGapState, start_pathFollowState
@@ -12,10 +13,19 @@ def runForce(self, forward_force):
 	else:
 		return False
 
+def end_runState(self):
+	# deactivate the arm rig layer
+	self.rig.stopArmLayer()
+
 def runState(self):
 	#playerHUD = logic.playerHUD
 	# get forward force
 	forward_force = self.getForwardForce()
+
+	# If detect enemy damage
+	if (self.tester.detectEnemyDamage()):
+		start_hitState(self)
+		return
 
 	# If detect water
 	if (self.tester.detectWater()):
@@ -25,11 +35,12 @@ def runState(self):
 		start_swimState(self)
 		# cancel method
 	else:
-		# if not touch ground
-		ground, pos, normal = self.physic.groundRay()
-		if (ground):
+		# if touch the ground ( else callback )
+		if ( self.respectGroundRule(end_runState) ):
 			# if detect next-level
 			if (self.tester.switchLevel()):
+				# End run state
+				end_runState(self)
 				# cancel state
 				return
 			# if arrow key is pressed
@@ -52,6 +63,7 @@ def runState(self):
 						self.rig.playRun()
 						# Arm Hunk Animation
 						if (self.armed):
+							# Run with sword and shield arm
 							self.rig.playRunArmArmed()
 						else:
 							self.rig.playRunArmBase()

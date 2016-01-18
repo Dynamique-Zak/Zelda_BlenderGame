@@ -35,7 +35,7 @@ def waitSwimState(self):
 		self.switchState(PlayerState.FORWARD_SWIM_STATE)
 	else:
 		# if detect ground ledge
-		if ( self.physic.detectLedgeGround() and self.physic.detectLedge() ):
+		if ( self.tester.detectLedgeGround() and self.tester.detectLedge() ):
 			if ( self.gamepad.isActionPressed() ):
 				# deactivate water
 				self.onWater = False

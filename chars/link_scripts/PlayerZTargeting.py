@@ -7,18 +7,19 @@ class PlayerZTargeting:
 
 	def __init__(self):
 		self.targetObject = None
+		self.detectedObject = None
 		self.active = False
 
 	def canTargetObject(self):
 		player = scene.objects['Link']
-		if ( player.gamepad.isZPressed() ):
-			self.activeTargetMode(scene.objects['bloc'])
+		if ( player.gamepad.isZPressed() and self.detectedObject != None ):
+			self.activeTargetMode()
 			return True
 		else:
 			return False
 
-	def activeTargetMode(self, targetObject):
-		self.targetObject = targetObject
+	def activeTargetMode(self):
+		self.targetObject = self.detectedObject
 		self.setupTargetObject()
 		logic.playerHUD.setTargetHUDState(True)
 		self.active = True
@@ -37,6 +38,37 @@ class PlayerZTargeting:
 		self.targetObject = None
 		logic.playerHUD.setTargetHUDState(False)
 		self.active = False
+
+	def activeHeadTrack(self):
+		# get objects
+		player = scene.objects['Link']
+		player.rig['armConstraint'] = True
+
+	def deactiveHeadTrack(self):
+		# get objects
+		player = scene.objects['Link']
+		player.rig['armConstraint'] = False
+
+	def canFindObject(self):
+		cont = logic.getCurrentController()
+		collision = cont.sensors['targetCollision']
+		# if detect
+		if collision.positive:
+			return True
+		else:
+			return False
+
+	def findObject(self):
+		cont = logic.getCurrentController()
+		collision = cont.sensors['targetCollision']
+		# if detect
+		if collision.positive:
+			self.detectedObject = collision.hitObject # After list object
+			logic.playerHUD.setTargetHUDState(True)
+			self.updateTargetCursor(self.detectedObject)
+		else:
+			logic.playerHUD.setTargetHUDState(False)
+			self.detectedObject = None
 
 	def targetMovement(self, player):
 		# if joy connected
@@ -65,6 +97,11 @@ class PlayerZTargeting:
 		# return statement
 		return moved
 
+	def updateTargetCursor(self, obj):
+		camera = scene.objects['MainCam']
+		# Apply target cursor
+		logic.playerHUD.setTargetCursorPosition(camera.getScreenPosition(obj))
+
 	def updateObjectsTransformation(self, player, headTracker, midPoint, camera):
 		#  Apply headTracker and midPoint position
 		headTracker.worldPosition = self.targetObject.worldPosition
@@ -79,8 +116,8 @@ class PlayerZTargeting:
 		pos = mathutils.Vector([-2, -5 - abs(z_cam), 0])
 		pos.rotate(player.orientation)
 
-		# Apply target cursor
-		logic.playerHUD.setTargetCursorPosition(camera.getScreenPosition(self.targetObject))
+		# Update cursor pos
+		self.updateTargetCursor(self.targetObject)
 
 		# Apply camera position
 		camera.worldPosition = player.worldPosition

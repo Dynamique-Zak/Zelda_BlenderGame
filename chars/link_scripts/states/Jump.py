@@ -3,6 +3,8 @@ from link_scripts.PlayerConstants import PlayerState
 def jumpState(self):
 	# set ground to false
 	self.grounded = False
+	# audio
+	self.audio.playJumpSound()
 	# jump force
 	self.linearVelocity[2] += 13.0
 	#test if y_force is respectable

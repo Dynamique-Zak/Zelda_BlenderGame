@@ -28,6 +28,14 @@ class HeartContainer:
 			heartContainer['heart'] = 0
 		else:
 			heartContainer['heart'] = next_heart
+		# Update hud
+		logic.playerHUD.updateHeart()
+
+	def notHaveHeart(self):
+		if ( heartContainer['heart'] == 0 ) :
+			return True
+		else:
+			return False
 
 class RupeeContainer:
 

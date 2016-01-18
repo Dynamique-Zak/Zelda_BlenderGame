@@ -1,7 +1,25 @@
 from link_scripts.PlayerConstants import PlayerState
 
-def startClimbToGround():
+def start_climbGroundState(self):
+	pasteToWall(self)
 	self.rig.playClimbLedge()
+	self.switchState(PlayerState.CLIMBGROUND_STATE)
+
+
+# ---------------------------------------------------------------------
+# * PASTER
+# ---------------------------------------------------------------------
+def pasteToWall(self):
+	#set orientation to ledge
+	hit_normal = self.ledgeData[1]
+	normal_vec = [-hit_normal[0], -hit_normal[1], hit_normal[2]]
+	self.alignAxisToVect(normal_vec, 1, 1)
+
+	#set_pos
+	z_pos = self.ledgeGroundData[0][2] - 1.2
+
+	self.worldPosition[2] = z_pos
+	self.linearVelocity[2] = 0.0
 
 def climbGroundState(self):
 	"""

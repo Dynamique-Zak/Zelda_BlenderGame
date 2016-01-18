@@ -83,9 +83,9 @@ class PlayerRig(types.BL_ArmatureObject):
 		self.keepLayer0()
 
 		self.playAction(
-		'link_jump', 1, 21,
+		'link_jump', 0, 23,
 		0, 0,
-		2, PLAY)
+		1, PLAY)
 
 	def playJumpSalto(self):
 		""" Play jump animation of link
@@ -116,7 +116,7 @@ class PlayerRig(types.BL_ArmatureObject):
 		self.keepLayer1()
 
 		self.playAction(
-		'link_idle1', 1, 274,
+		'link_idle1', 1, 59,
 		1, 1,
 		5, LOOP)
 
@@ -322,6 +322,26 @@ class PlayerRig(types.BL_ArmatureObject):
 		5, 0,
 		2, LOOP)
 
+	def playTargetFallBackJump(self):
+		""" Play target idle animation
+		"""
+		self.keepLayer5()
+
+		self.playAction(
+		'link_target_jump', 1, 11,
+		5, 0,
+		2, PLAY)
+
+	def playTargetBounceBackJump(self):
+		""" Play target idle animation
+		"""
+		self.keepLayer5()
+
+		self.playAction(
+		'link_target_jump', 12, 18,
+		5, 0,
+		1, PLAY)
+
 	def playStrafeWard(self):
 		""" Play strafe movement
 		"""
@@ -359,9 +379,9 @@ class PlayerRig(types.BL_ArmatureObject):
 		self.keepLayer5()
 
 		self.playAction(
-		'link_attack', 0, 9,
+		'link_attack', 0, 13,
 		5, 0,
-		0, PLAY)
+		2, PLAY)
 
 	def playBasicSwordAttack2(self):
 		""" Play basic sword Attack animation
@@ -369,7 +389,70 @@ class PlayerRig(types.BL_ArmatureObject):
 		self.keepLayer5()
 
 		self.playAction(
-		'link_attack', 12, 17,
+		'link_attack', 14, 35,
+		5, 0,
+		2, PLAY)
+
+	def playBasicSwordAttack3(self):
+		""" Play basic sword Attack animation
+		"""
+		self.keepLayer5()
+
+		self.playAction(
+		'link_attack', 36, 58,
+		5, 0,
+		1, PLAY)
+
+	def playBeginJumpAttack(self):
+		""" Play basic sword Attack animation
+		"""
+		self.keepLayer5()
+
+		self.playAction(
+		'link_attack', 61, 74,
+		5, 0,
+		2, PLAY)
+
+	def playBounceJumpAttack(self):
+		""" Play basic sword Attack animation
+		"""
+		self.keepLayer5()
+
+		self.playAction(
+		'link_attack', 79, 89,
+		5, 0,
+		0, PLAY)
+
+	# -------------------------------------------------------------------------------#
+	# * HIT ANIMATIOS
+	# -------------------------------------------------------------------------------#
+	def playHitUpercut(self):
+		""" Play basic sword Attack animation
+		"""
+		self.keepLayer5()
+
+		self.playAction(
+		'link_hit', 0, 7,
+		5, 0,
+		0, PLAY)
+
+	def playHitBounce(self):
+		""" Play basic sword Attack animation
+		"""
+		self.keepLayer5()
+
+		self.playAction(
+		'link_hit', 7, 32,
+		5, 0,
+		0, PLAY)
+
+	def playBounceStandUp(self):
+		""" Play basic sword Attack animation
+		"""
+		self.keepLayer5()
+
+		self.playAction(
+		'link_hit', 32, 46,
 		5, 0,
 		0, PLAY)
 

@@ -88,19 +88,3 @@ def start_firstLookView(self):
 	self.stopMovement()
 	self.camManager.camToFirstview()
 	self.switchState(PlayerState.FIRST_LOOK_VIEW_STATE)
-
-def start_openDoorState(self):
-	# play anim
-	self.rig.playOpenDoor()
-	# active the target door animtion
-	self.targetObject['open'] = True
-	self.suspendDynamics()
-	# set pos to door pos
-	obj_pos = None
-	for obj in self.targetObject.children:
-		if ("door_pos" in obj.name):
-			obj_pos = obj
-	self.worldPosition[0] = obj_pos.worldPosition[0]
-	self.worldPosition[1] = obj_pos.worldPosition[1]
-	# switch state
-	self.switchState(PlayerState.OPEN_DOOR_STATE)

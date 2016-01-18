@@ -101,20 +101,24 @@ class Gamepad:
 	# * Joystick part
 	# =================================================================
 	def initJoystick(self):
-		pygame.joystick.init() #initialize joystick module
-		pygame.joystick.get_init() #verify initialization (boolean)
+		pygame.display.init() # Init pygame display for event
+		pygame.joystick.init() # Initialize joystick module
+		pygame.joystick.get_init() # Verify initialization (boolean)
 
-		if ( pygame.joystick.get_count() > 0):
+		if ( pygame.joystick.get_count() > 0 ):
 			self.joystick = pygame.joystick.Joystick(0)
-			print("Joystick ", self.joystick.get_name(), " is connected")
 			self.joystick.init()
 			self.joystick.get_init()
+			print("Joystick ", self.joystick.get_name(), " is connected")
 
 	def joystickConnected(self):
 		if (self.joystick != None):
 			return True
 		else:
 			return False
+
+	def updateJoystick(self):
+		pygame.event.pump()
 
 	def joyAxisActive(self):
 		axis = self.getJoyAxis1()
@@ -125,8 +129,8 @@ class Gamepad:
 
 	def getJoyButton(self, indexButton):
 		check = False
-		if (self.joystickConnected()):
-			if self.joystick.get_button(indexButton):
+		if ( self.joystickConnected() ):
+			if ( self.joystick.get_button(indexButton) ):
 				check = True
 		return check
 

@@ -31,7 +31,7 @@ class PlayerHUD(types.KX_GameObject):
 		objects['targetCursor']['activate'] = val
 
 	def setTargetCursorPosition(self, pos):
-		x = -5.5 + ( pos[0] * 11 )
+		x = -4.5 + ( pos[0] * 9 )
 		y = 3.5 - ( pos[1] * 7 )
 		objects['targetCursor'].worldPosition = [x, y, 1]
 
@@ -129,6 +129,15 @@ class PlayerHUD(types.KX_GameObject):
 				vert=mesh.getVertex(0,1)
 				UV=vert.getUV()
 				vert.setUV([0+dx,0.75+dy])
+
+	def updateMiniMap(self):
+		cursor = scene.objects['mini_map_player_cursor']
+		mini_map_cont_pos = scene.objects['mini_map_cont'].worldPosition
+		cursor.orientation = logic.player.orientation
+		x = mini_map_cont_pos[0] + ( logic.player.worldPosition[0] / 45 )
+		y = mini_map_cont_pos[1] + ( logic.player.worldPosition[1] / 45 )
+		cursor.worldPosition[0] = x
+		cursor.worldPosition[1] = y
 
 	def low_healt(self, cont):
 		heartContainer = logic.globalDict['Player']['heartContainer']

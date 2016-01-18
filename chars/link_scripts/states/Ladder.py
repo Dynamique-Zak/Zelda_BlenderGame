@@ -103,7 +103,7 @@ def climbDownLadderState(self):
 	frame = self.rig.getActionFrame(2)
 	if (frame != 0):
 		# if detect the ground from down (the end)
-		if ( self.physic.detectGround()):
+		if ( self.tester.detectGround()):
 			# climb
 			start_climbToIdleState(self)
 		else:
@@ -118,7 +118,7 @@ def climbUpLadderState(self):
 	frame = self.rig.getActionFrame(2)
 	if (frame != 17):
 		# if detect the ground (the end)
-		if ( self.physic.detectLedgeGround(0.0) and isAlignToGround(self) ):
+		if ( self.tester.detectLedgeGround(0.0) and isAlignToGround(self) ):
 			# climb
 			start_climbToGroundLadderState(self)
 		else:

@@ -1,5 +1,6 @@
 from bge import logic
 from link_scripts.PlayerConstants import PlayerState
+from link_scripts.states.Hits import start_hitState
 from link_scripts.states.Water import start_swimState
 
 def start_rollState(self):
@@ -22,7 +23,16 @@ def stop_rollWall_force(self):
 	else:
 		self.linearVelocity[1] = 0.0
 
+def goToJump(self):
+	self.grounded = False
+	self.switchState(PlayerState.JUMP_STATE)
+
 def rollState(self):
+	# If detect enemy damage
+	if (self.tester.detectEnemyDamage()):
+		start_hitState(self)
+		return
+
 	# If detect water
 	if (self.tester.detectWater()):
 		# stop orientation
@@ -31,8 +41,8 @@ def rollState(self):
 		start_swimState(self)
 	else:
 		# if detect always the ground continue the rolling
-		if (self.physic.detectGround()):
-			wall, pos, normal = self.physic.wallRay()
+		if (self.respectGroundRule(goToJump)):
+			wall, pos, normal = self.tester.wallRay()
 			if (wall):
 				start_rollWall(self)
 				self.switchState(PlayerState.ROLLWALL_STATE)
@@ -41,10 +51,6 @@ def rollState(self):
 				if (self.rig.getActionFrame(1) == 11):
 					# change state
 					self.switchState(PlayerState.IDLE_STATE)
-		# else go t ojump like normal zelda game
-		else:
-			# change state
-			self.switchState(PlayerState.JUMP_STATE)
 
 def rollWallState(self):
 	# test if finish rolling wall wanimation
