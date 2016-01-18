@@ -3,7 +3,8 @@
 A zelda fan made with Blender Game Engine. I used more 80% python. This game is in development and you can help.
 ##Video
 
-Video dated August 16, 2014 : [https://www.youtube.com/watch?v=BOBg3g-WLesZelda](Zelda Awakening in Blender Game)
+Video dated August 16, 2014 : [Zelda Awakening in Blender Game](https://www.youtube.com/watch?v=BOBg3g-WLesZelda)
+[Zelda In Blender game - Fight test](https://www.youtube.com/watch?v=ndbULJvf4Bo)
 
 ##Environnement Work
 
@@ -34,7 +35,7 @@ blender_2.76/2.76/python/lib/python3.4/pygame
 
 Help Links:
 
-    [http://askubuntu.com/questions/401342/how-to-download-pygame-in-python3-3](Ask Ubuntu - Install pygame 3.0)
+    [Ask Ubuntu - Install pygame 3.0](http://askubuntu.com/questions/401342/how-to-download-pygame-in-python3-3)
 
 ###Others
 
