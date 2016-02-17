@@ -9,7 +9,7 @@ Video dated August 16, 2014 : [Zelda Awakening in Blender Game](https://www.yout
 
 Video dated January 18, 2016 : [Zelda In Blender game - Fight test](https://www.youtube.com/watch?v=ndbULJvf4Bo)
 
-Video dated February 17, 2016 : [Zelda in blender game [Update 17-03-2016](https://www.youtube.com/watch?v=ndbULJvf4Bo)
+Video dated February 17, 2016 : [Zelda in blender game Update 17-03-2016](https://www.youtube.com/watch?v=ndbULJvf4Bo)
 
 ##Environnement de travail
 
@@ -170,8 +170,8 @@ Il y a des animations à refaire (Suite à la modification de l'armature)
 
 - Schartier Isaac (Project Master - Developer - Texture - Animations - Modelisation - Scenario)
 - Henri Nourel (Collaborateur)
-- Luky (Animations 3D)
-- Deryss Onapin (Dessinateur, Scenario)
+- Lucky (Animations 3D)
+- Derys Onapin (Dessinateur, Scenario)
 
 ##Copyright
 
