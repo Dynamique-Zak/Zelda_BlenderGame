@@ -81,8 +81,8 @@ Veuillez preciser l'utilisation du joystick (pygame)
 Le repertoire `dx_ge` contient les scripts python nécessaire au fonctionnement du gestionnaire.
 Il suffit à partir du script `manager.py` de renseigner la commande à utiliser.
 
-###Docs du gestionnaire
-####Convention dans le nommage
+###Doc du gestionnaire
+####Convention dans les nommages
 Un etat commence par une majuscule, chaque syllabe commence par une majuscule
 `Exemple: MonEtat`
 
