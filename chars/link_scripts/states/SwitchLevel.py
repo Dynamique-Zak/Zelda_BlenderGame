@@ -1,11 +1,9 @@
 from bge import logic
 
-def levelPathFollowState(self):
-	self.levelManager.transitionTime += 0.1
+def start_switchLevel(self):
+	self.scene.suspend()
 
-	if ( self.levelManager.transitionIsFinish(4.5) ):
-		# switch state to next level
-	   self.levelManager.changeLevel()
+	self.levelManager.changeLevel()
 
 def levelGapState(self):
 	self.levelManager.transitionTime += 0.1

@@ -5,19 +5,8 @@ def start_fallState(self):
 	self.grounded = False
 	self.fallTime = 0.0
 	# go to idle state
+	self.rig.stopArmLayer()
 	self.switchState(PlayerState.FALL_STATE)
-
-def start_beginGrapLedgeState(self):
-	self.onLedge = True
-	self.suspendDynamics()
-	# block movement
-	self.stopMovement()
-	# paste
-	self.physic.pasteToLedge()
-	# play anim
-	self.rig.playStartGrapLedge()
-	# go to begin grap ledge
-	self.switchState(PlayerState.BEGIN_GRAPLEDGE_TO_GROUND_STATE)
 
 def start_ladderState(self):
 	# reset hud action text
@@ -37,25 +26,9 @@ def start_ladderState(self):
 	# after fin set pos and orient
 	self.worldPosition[0] = obj_origin.worldPosition[0]
 	self.worldPosition[1] = obj_origin.worldPosition[1]
+	self.orientation = self.ladderData[0].orientation
 	# set state
 	self.switchState(PlayerState.WAITLADDER_STATE)
-
-def nextStep(self):
-	self.levelManager.step += 1
-	for obj in self.levelManager.pathObject.children:
-		name = "path_step_" + str(self.levelManager.step)
-		if (obj.name == name):
-			self.setTrackOrient(obj)
-
-def start_pathFollowState(self):
-	# cancel orientation
-	self.orientManager.stopOrientation(self)
-	nextStep(self)
-	# deactivate track player cam
-	self.camManager.deactiveTrackPlayer()
-	self.camManager.activeLookPlayer()
-	# swithc state
-	self.switchState(PlayerState.PATH_FOLLOW_STATE)
 
 def start_pathFollowLevelState(self):
 	# block movement

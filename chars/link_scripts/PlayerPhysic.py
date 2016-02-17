@@ -7,8 +7,7 @@ forward_obj = objects['link_forward_obj']
 
 class PlayerPhysic:
 
-	def __init__(self, groundSens):
-		self.groundSens = groundSens
+	def __init__(self):
 		self.player = None
 
 	def setPlayer(self, player):

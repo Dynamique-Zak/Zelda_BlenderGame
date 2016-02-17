@@ -1,9 +1,11 @@
 from bge import logic
 from link_scripts.PlayerConstants import PlayerState
+from link_scripts.PlayerEffect import *
 from link_scripts.states.Hits import start_hitState
 from link_scripts.states.Roll import start_rollState
+from link_scripts.states.Path import start_pathFollowState
 from link_scripts.states.Water import start_swimState
-from link_scripts.StarterState import start_levelGapState, start_pathFollowState
+from link_scripts.StarterState import start_levelGapState
 
 def runForce(self, forward_force):
 	self.linearVelocity[0] = 0
@@ -37,18 +39,14 @@ def runState(self):
 	else:
 		# if touch the ground ( else callback )
 		if ( self.respectGroundRule(end_runState) ):
-			# if detect next-level
-			if (self.tester.switchLevel()):
-				# End run state
-				end_runState(self)
-				# cancel state
-				return
 			# if arrow key is pressed
-			elif ( forward_force != 0.0 ):
+			if ( forward_force != 0.0 ):
 				# set action hud text
 				#logic.playerHUD.changeActionText('Roll')
+				if (self.tester.detectPath()):
+				 	start_pathFollowState(self)
 				# if push to action key
-				if (self.gamepad.isActionPressed()):
+				elif (self.gamepad.isActionPressed()):
 				# NEXT STATE : ROLL
 					# stop orientation
 					self.orientManager.stopOrientation(self)
@@ -61,14 +59,11 @@ def runState(self):
 					if ( runForce(self, forward_force) ):
 						# play run animation
 						self.rig.playRun()
-						# Arm Hunk Animation
-						if (self.armed):
-							# Run with sword and shield arm
-							self.rig.playRunArmArmed()
-						else:
-							self.rig.playRunArmBase()
+						frame = self.rig.getActionFrame(1)
+						#if (frame <= 1):
+							# PlayerEffect.addEffectFrame(frame, [4, 11], PlayerEffect.addGrassEffect())
 						# play with step sounds
-						self.audio.playStepSound(self.rig.getActionFrame(1), [4, 11])
+						self.audio.playStepSound(frame, [4, 11])
 					else:
 						# go to walk
 						self.switchState(PlayerState.WALK_STATE)

@@ -41,7 +41,7 @@ def rollState(self):
 		start_swimState(self)
 	else:
 		# if detect always the ground continue the rolling
-		if (self.respectGroundRule(goToJump)):
+		if (self.respectGroundRule(goToJump, False)):
 			wall, pos, normal = self.tester.wallRay()
 			if (wall):
 				start_rollWall(self)

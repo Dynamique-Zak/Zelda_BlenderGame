@@ -72,6 +72,14 @@ def startLastHitState(self):
     self.switchState(LAST_HIT_STATE)
 
 def startDeadState(self):
+    """
+    Not actif when they will dead for many raisons
+    1: Is not targetable
+    2: If the object will remove, the BGE can have "data has been freed"
+    """
+    # not actif for many raisons
+    self['actif'] = False
+    # dead
     self.switchState(DEAD_STATE)
 
 def sleepState(self):
@@ -89,6 +97,8 @@ def appearState(self):
     # if finish th apparition
     frame = self.rig.getActionFrame(0)
     if ( frame == 169):
+        # Actif object
+        self['actif'] = True
         # finish and go to idle
         self.switchState(IDLE_STATE)
 
@@ -120,14 +130,15 @@ def attackState(self):
         self.trackTo(self.targetObject)
         self.switchState(IDLE_STATE)
     else:
-        if (frame >= 39 and frame <= 42):
-            self.trackTo(None)
+        if ( not self.detectDamage(startHitState) ):
+            if (frame >= 39 and frame <= 42):
+                self.trackTo(None)
 
-        if (frame > 42 and frame < 47):
-            self.setAttack(0.5)
-        if (frame >= 47):
-            self.setAttack(0)
-            self.detectDamage(startHitState)
+            if (frame > 42 and frame < 47):
+                self.setAttack(0.5)
+            if (frame >= 47):
+                self.setAttack(0)
+                self.detectDamage(startHitState)
 
 def hitState(self):
     self.trackTo(None)
@@ -163,6 +174,9 @@ def lastHitState(self):
 
 def deadState(self):
     # Dead
+    # Add pouf effect
+    scene.addObject("monsterPouf", self, 80)
+    # Remove object
     self.endObject()
 
 def statesManager(self):

@@ -1,6 +1,12 @@
 from link_scripts.PlayerConstants import PlayerState
 from link_scripts.states.Hits import start_hitState
 
+def start_firstLookView(self):
+	self.orientManager.stopOrientation(self)
+	self.stopMovement()
+	self.camManager.camToFirstview()
+	self.switchState(PlayerState.FIRST_LOOK_VIEW_STATE)
+
 def endLook(self):
 	# re activate tps camera mode
 	self.camManager.activeTrackPlayer()
@@ -11,6 +17,15 @@ def firstLookViewState(self):
 		endLook(self)
 		start_hitState(self)
 		return
+
+	# Look mode (Skills/object) Default bow
+	if (self.objectManager.use):
+		# Play target with object mode
+		self.rig.playObjectTargetIdle()
+		# * Object
+		self.rig.playWaitBow()
+	else:
+		self.rig.playWait()
 
 	# if cancel state
 	if ( self.gamepad.isActionPressed() ):

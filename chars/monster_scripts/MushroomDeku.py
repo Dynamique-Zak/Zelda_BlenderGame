@@ -9,6 +9,7 @@ LOOP = logic.KX_ACTION_MODE_LOOP
 class MushroomDeku(types.KX_GameObject):
 
 	def __init__(self, own, mesh, rig, attackBox):
+		self.attackLevel = 0
 		self.meshMonster = mesh
 		self.rig = rig
 		self.attackBox = attackBox

@@ -34,5 +34,11 @@ class PlayerOrientationManager:
 		orientController.worldPosition = pos
 		orientController.worldOrientation = orient
 
+	def targetObject(self, obj):
+		cont = logic.getCurrentController()
+		act = cont.actuators['track_orient']
+		act.object = obj
+		cont.activate(act)
+
 	def stopOrientation(self, player):
 		player.setTrackOrient(None)

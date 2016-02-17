@@ -1,4 +1,11 @@
-# import states
+# ==========================================================
+# * Imports
+# ==========================================================
+# Import states
+from link_scripts.states.Bow import *
+from link_scripts.states.Death import *
+from link_scripts.states.Chest import *
+from link_scripts.states.Push import *
 from link_scripts.states.Attack import *
 from link_scripts.states.Climb import *
 from link_scripts.states.Idle import *
@@ -20,100 +27,104 @@ from link_scripts.states.Look import *
 from link_scripts.states.Water import *
 from link_scripts.states.Targeting import *
 
-# Other
+# Other Imports
 from .PlayerConstants import PlayerState
 
-#PlayerState = PlayerClass.PlayerState
-
+# ==========================================================
+# * State management
+# ==========================================================
 def managePlayerState(player):
 	etat = player.etat
-	# Idle state
-	if (player.etat == PlayerState.IDLE_STATE):
+
+	# * Idle State
+	if (etat == PlayerState.IDLE_STATE):
 		idleState(player)
-	# Walk state
-	elif (player.etat == PlayerState.WALK_STATE):
+
+	# * Walk State
+	elif (etat == PlayerState.WALK_STATE):
 		walkState(player)
-	# Run state
-	elif (player.etat == PlayerState.RUN_STATE):
+
+	# * Run State
+	elif (etat == PlayerState.RUN_STATE):
 		runState(player)
-   # Jump state
-	elif (player.etat == PlayerState.JUMP_STATE):
+    # * Jump State
+	elif (etat == PlayerState.JUMP_STATE):
 		jumpState(player)
-	# Fall state
-	elif (player.etat == PlayerState.FALL_STATE):
+
+	# * Fall State
+	elif (etat == PlayerState.FALL_STATE):
 		fallState(player)
-	# Land state
-	elif (player.etat == PlayerState.LAND_STATE):
+
+	# * Land State
+	elif (etat == PlayerState.LAND_STATE):
 		lowLandState(player)
-	# Roll state
-	elif (player.etat == PlayerState.ROLL_STATE):
+
+	# * Roll State
+	elif (etat == PlayerState.ROLL_STATE):
 		 rollState(player)
-	# Collide the wall during a roll
-	elif (player.etat == PlayerState.ROLLWALL_STATE):
+
+	elif (etat == PlayerState.ROLLWALL_STATE):
 		 rollWallState(player)
 
-	#  ========================================================
-	#  * CLIMB STATE PART
-	#  ========================================================
-
-	# When started to grap ledge
-	elif (player.etat == PlayerState.START_GRAPLEDGE_STATE):
+	# * Ledge State
+	elif (etat == PlayerState.START_GRAPLEDGE_STATE):
 		 startGrapLedgeState(player)
-	# when started to grap ledge 2
-	elif (player.etat == PlayerState.BEGIN_GRAPLEDGE_TO_GROUND_STATE):
-		 beginGrapLedgeToGround(player)
-	# Grapeledge state
-	elif (player.etat == PlayerState.GRAPLEDGE_STATE):
+
+	elif (etat == PlayerState.BEGIN_GRAPLEDGE_STATE):
+		 beginGrapLedgeState(player)
+
+	elif (etat == PlayerState.GRAPLEDGE_STATE):
 		grapLedgeState(player)
-   # Climb ledge state
-	elif (player.etat == PlayerState.CLIMBLEDGE_STATE):
+
+	elif (etat == PlayerState.CLIMBLEDGE_STATE):
 		climbLedgeState(player)
 
+	elif (etat == PlayerState.START_LADDER_TOP_STATE):
+		 ladderTopState(player)
+
+	# * Climb State
 	elif ( etat == PlayerState.CLIMBGROUND_STATE):
 		climbGroundState(player)
-#   # Wait to push a bloc state
-#   elif (player.etat == PlayerState.WAITBLOC_STATE):
-#   player.waitBlocState()
-#   # Push bloc state
-#   elif (player.etat == PlayerState.PUSHBLOCK_STATE):
-#   player.pushBlocState()
-	# Wait ladder state
-	elif (player.etat == PlayerState.WAITLADDER_STATE):
+
+	# * Ladder State
+	elif (etat == PlayerState.WAITLADDER_STATE):
 		 waitLadderState(player)
-	# Climb ladder to up state
-	elif (player.etat == PlayerState.CLIMBUPLADDER_STATE):
+
+	elif (etat == PlayerState.CLIMBUPLADDER_STATE):
 		 climbUpLadderState(player)
-	# Climb ladder to down state
-	elif (player.etat == PlayerState.CLIMBDOWNLADDER_STATE):
+
+	elif (etat == PlayerState.CLIMBDOWNLADDER_STATE):
 		 climbDownLadderState(player)
-	# Clim to ground from ladder
-	elif (player.etat == PlayerState.CLIMB_TO_GROUND_LADDER_STATE):
+
+	elif (etat == PlayerState.CLIMB_TO_GROUND_LADDER_STATE):
 		 climbToGroundLadderState(player)
-	# Wait swim state
-	elif (player.etat == PlayerState.WAIT_SWIM_STATE):
+
+	# * Water state
+	elif (etat == PlayerState.WAIT_SWIM_STATE):
 		 waitSwimState(player)
-	# Forward swim state
-	elif (player.etat == PlayerState.FORWARD_SWIM_STATE):
+
+	elif (etat == PlayerState.FORWARD_SWIM_STATE):
 		forwardSwimState(player)
-	# Path follow
-	elif (player.etat == PlayerState.PATH_FOLLOW_STATE):
+
+	# * Path State
+	elif (etat == PlayerState.PATH_FOLLOW_STATE):
 		pathFollowState(player)
-	elif (player.etat == PlayerState.LEVEL_GAP_STATE):
+
+	# * SwitchLevel State
+	elif (etat == PlayerState.LEVEL_GAP_STATE):
 		levelGapState(player)
-	# path follow level
-	elif (player.etat == PlayerState.PATH_FOLLOW_LEVEL_STATE):
+
+	elif (etat == PlayerState.PATH_FOLLOW_LEVEL_STATE):
 		levelPathFollowState(player)
-	# First person look view state
-	elif (player.etat == PlayerState.FIRST_LOOK_VIEW_STATE):
+
+	# * Look state
+	elif (etat == PlayerState.FIRST_LOOK_VIEW_STATE):
 		firstLookViewState(player)
 
-	#  ========================================================
-	#  * TARGET STATE PART
-	#  ========================================================
-	# idle target state
+	# * Targeting State
 	elif (etat == PlayerState.IDLE_TARGET_STATE):
 		idleTargetState(player)
-	# strafeState
+
 	elif (etat == PlayerState.STRAFE_STATE):
 		strafeState(player)
 
@@ -123,33 +134,38 @@ def managePlayerState(player):
 	elif (etat == PlayerState.RIGHT_STRAFE_ROLL_STATE):
 		rightStrafeRollState(player)
 
-	elif (etat == PlayerState.FALL_BACK_JUMP):
+	elif (etat == PlayerState.FALL_BACK_JUMP_STATE):
 		fallBackJump(player)
 
-	elif (etat == PlayerState.BOUNCE_BACK_JUMP):
+	elif (etat == PlayerState.BOUNCE_BACK_JUMP_STATE):
 		bounceBackJump(player)
 
-	#  ========================================================
-	#  * ATTACK STATE PART
-	#  ========================================================
-	elif (etat == PlayerState.BASIC_SWORD_ATTACK_1):
+	# * Attack state
+	elif (etat == PlayerState.BASIC_SWORD_ATTACK_1_STATE):
 		basicSwordAttack1State(player)
 
-	elif (etat == PlayerState.BASIC_SWORD_ATTACK_2):
+	elif (etat == PlayerState.BASIC_SWORD_ATTACK_2_STATE):
 		basicSwordAttack2State(player)
 
-	elif (etat == PlayerState.BASIC_SWORD_ATTACK_3):
+	elif (etat == PlayerState.BASIC_SWORD_ATTACK_3_STATE):
 		basicSwordAttack3State(player)
 
-	elif (etat == PlayerState.BEGIN_JUMP_ATTACK):
+	elif (etat == PlayerState.BEGIN_JUMP_ATTACK_STATE):
 		fallJumpAttackState(player)
 
-	elif (etat == PlayerState.BOUNCE_JUMP_ATTACK):
+	elif (etat == PlayerState.BOUNCE_JUMP_ATTACK_STATE):
 		bounceJumpAttackState(player)
 
-	#  ========================================================
-	#  * HITS STATE PART
-	#  ========================================================
+	elif (etat == PlayerState.CLANG_SWORD_STATE):
+		clangSwordState(player)
+
+	elif (etat == PlayerState.SPECIAL_ROLL_STATE):
+		specialRollState(player)
+
+	elif (etat == PlayerState.SPECIAL_ATTACK_1_STATE):
+		specialAttack1State(player)
+
+	# * Hits State
 	elif (etat == PlayerState.HIT_UPERCUT_STATE):
 		hitUpercutState(player)
 
@@ -159,24 +175,78 @@ def managePlayerState(player):
 	elif (etat == PlayerState.BOUNCE_STANDUP_STATE):
 		bounceStandUpState(player)
 
-	#  ========================================================
-	#  * PICK AND THROW STATE PART
-	#  ========================================================
+	# * PickThrow State
 	elif (etat == PlayerState.PICK_OBJECT_STATE):
 		pickObjectState(player)
 
 	elif (etat == PlayerState.THROW_OBJECT_STATE):
 		throwObjectState(player)
 
-	#  ========================================================
-	#  * INTERACTION PART
-	#  ========================================================
+	# * Interaction State
 	elif (etat == PlayerState.DIALOGUE_INTERACTION_STATE):
 		dialogueInteractionState(player)
 
-	# Open doot state
-	elif (player.etat == PlayerState.OPEN_DOOR_STATE):
+	# * Door State
+	elif (etat == PlayerState.OPEN_DOOR_STATE):
 		openDoorState(player)
 
-	elif (player.etat == PlayerState.RUN_AFTER_DOOR_STATE):
+	elif (etat == PlayerState.RUN_AFTER_DOOR_STATE):
 		runAfterDoorState(player)
+
+	elif (etat == PlayerState.WAIT_PUSH_STATE):
+		waitPushState(player)
+
+	elif (etat == PlayerState.WALK_PUSH_STATE):
+		walkPushState(player)
+
+	elif (etat == PlayerState.OPENSMALL_CHEST_STATE):
+		openSmallChestState(player)
+
+	elif (etat == PlayerState.OPENBIG_CHEST_STATE):
+		openBigChestState(player)
+
+	elif (etat == PlayerState.WAITCONFIRM_CHEST_STATE):
+		waitConfirmChestState(player)
+
+	elif (etat == PlayerState.OPEN_CHEST_STATE):
+		openChestState(player)
+
+	elif (etat == PlayerState.GROUND_DEATH_STATE):
+		groundDeathState(player)
+
+	elif (etat == PlayerState.DIE_DEATH_STATE):
+		DieDeathState(player)
+
+	elif (etat == PlayerState.OPENSLIDE_DOOR_STATE):
+		openSlideDoorState(player)
+
+	elif (etat == PlayerState.AFTEROPEN_DOOR_STATE):
+		afterOpenDoorState(player)
+
+	elif (etat == PlayerState.UNLOCK_DOOR_STATE):
+		unlockDoorState(player)
+
+	elif (etat == PlayerState.GRAP_LEDGE_STATE):
+		grapLedgeState(player)
+
+	elif (etat == PlayerState.BEGINGRAP_LEDGE_STATE):
+		beginGrapLedgeState(player)
+
+	elif (etat == PlayerState.GOTOWAIT_LEDGE_STATE):
+		goToWaitLedgeState(player)
+
+	elif (etat == PlayerState.WAIT_LEDGE_STATE):
+		waitLedgeState(player)
+
+	elif (etat == PlayerState.CLIMB_LEDGE_STATE):
+		climbLedgeState(player)
+
+	elif (etat == PlayerState.FIRE_BOW_STATE):
+		fireBowState(player)
+
+	elif (etat == PlayerState.WAITSPINSWORD_ATTACK_STATE):
+		waitSpinSwordAttackState(player)
+
+	elif (etat == PlayerState.SPINSWORD_ATTACK_STATE):
+		spinSwordAttackState(player)
+	# * End State Management

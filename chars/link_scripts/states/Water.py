@@ -3,9 +3,14 @@ from link_scripts.StarterState import start_fallState
 from link_scripts.states.Ledge import start_beginGrapLedgeState
 
 def start_swimState(self):
+	# Deactivate armed mode
+	self.unsheat(False)
+	# Stop any movement
 	self.stopMovement()
+	# Set on water True
 	self.onWater = True
 	self.grounded = False
+	# Go to swim state
 	self.switchState(PlayerState.WAIT_SWIM_STATE)
 
 def toWaterPos(self):

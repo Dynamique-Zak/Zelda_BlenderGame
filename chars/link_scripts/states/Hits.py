@@ -1,5 +1,6 @@
 from bge import logic
 from link_scripts.PlayerConstants import PlayerState
+from link_scripts.states.Death import start_DieDeathState
 
 scene = logic.getCurrentScene()
 objects = scene.objects
@@ -19,27 +20,37 @@ def restoreColor(self):
 
 # Starters
 def start_hitState(self):
-    self.stopMovement()
-    start_hitUpercut(self)
+    if (not self.isAlive()):
+        start_DieDeathState(self)
+    else:
+        self.linearVelocity[2] = 0.0
+        self.stopMovement()
+        start_hitUpercut(self)
 
 def start_hitUpercut(self):
     # Lose heart
     self.applyDamage()
-    # Play animation
-    self.rig.playHitUpercut()
-    # Play sound
-    self.audio.playHurtSound()
-    # Hit effect
-    hitEffect(self)
-    # Deactive ground
-    self.grounded = False
-    # Fall up force
-    self.linearVelocity[2] += 16.0
-    self.linearVelocity[1] -= 8.0
-    # Go to state
-    self.switchState(PlayerState.HIT_UPERCUT_STATE)
+
+    if (not self.isAlive()):
+        start_DieDeathState(self)
+    else:
+        # Play animation
+        self.rig.playHitUpercut()
+        # Play sound
+        self.audio.playHurtSound()
+        # Hit effect
+        hitEffect(self)
+        # Deactive ground
+        self.grounded = False
+        # Fall up force
+        self.linearVelocity[2] += 16.0
+        self.linearVelocity[1] -= 8.0
+        # Go to state
+        self.switchState(PlayerState.HIT_UPERCUT_STATE)
 
 def start_hitBounce(self):
+    # Stop red color
+    restoreColor(self)
     # Play animation
     self.rig.playHitBounce()
     # Sound

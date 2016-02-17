@@ -1,4 +1,5 @@
 from link_scripts.PlayerConstants import PlayerState
+from link_scripts.states.Ladder import start_ladderFromTop
 from link_scripts.states.Hits import start_hitState
 from link_scripts.StarterState import start_fallState
 from link_scripts.states.Water import start_swimState
@@ -19,6 +20,10 @@ def walkState(self):
 	# get forward force
 	forward_force = self.getForwardForce()
 	speedAnim = 1.0#abs(self.gamepad.getJoyAxis1Value())
+
+	if (self.tester.detectLadderBottom()):
+		start_ladderFromTop(self)
+		return
 
 	# If detect enemy damage
 	if (self.tester.detectEnemyDamage()):
@@ -47,7 +52,7 @@ def walkState(self):
 			else:
 				# play walk animation
 				self.rig.playWalk(speedAnim)
-				# pla ystep sound
+				# play step sound
 				self.audio.playStepSound(self.rig.getActionFrame(1), [4, 13])
 				# active orientation movement
 				self.orientManager.orient_player(self)

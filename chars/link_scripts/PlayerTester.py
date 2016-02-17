@@ -1,5 +1,6 @@
 from bge import logic
-from .StarterState import start_levelGapState, start_pathFollowState
+from link_scripts.states.Path import start_pathFollowState
+from .states.SwitchLevel import start_switchLevel
 
 scene = logic.getCurrentScene()
 objects = scene.objects
@@ -20,6 +21,10 @@ class PlayerTester:
 		return self.player.rayCast(posTo, None, 1.2+add, prop, 0, 1)
 
 	def detectGround(self):
+		"""
+		If detect the ground with groundRay save the last ground pos
+		for respawn and return True
+		"""
 		ground, pos, normal = self.groundRay(0)
 		if (ground):
 			self.player.lastGroundPos = pos
@@ -28,6 +33,9 @@ class PlayerTester:
 			return False
 
 	def detectBlackHole(self):
+		"""
+		If detect a blackHole/gulf, return True
+		"""
 		posTo = [self.player.worldPosition[0], self.player.worldPosition[1], self.player.worldPosition[2] - 1.2]
 		prop = "blackHole"
 		obj, pos, normal = self.player.rayCast(posTo, None, 1.2, prop, 0, 1)
@@ -51,10 +59,17 @@ class PlayerTester:
 		return self.player.rayCast(forward_obj, None, 0.7, prop, 0, 1)
 
 	def ledgeGroundRay(self, add=0):
+		"""
+		Detect a ground on top of a ledge
+		"""
 		prop = "ground"
-		return ledge_ground_detect.rayCast(forward_obj, None, 1.2+add, prop, 0, 1)
+		return ledge_ground_detect.rayCast(forward_obj, None, 0.6+add, prop, 0, 1)
 
 	def detectLedge(self):
+		"""
+		Detect ledge, if can detect the ledge, save ledge data into array
+		for process ledge system
+		"""
 		ledge, l_pos, l_normal = self.ledgeRay()
 		# if touch ledge
 		if (ledge):
@@ -65,9 +80,15 @@ class PlayerTester:
 		else:
 			return False
 
+	def detectLedgeBottom(self):
+		"""
+		If detect the ledge from bottom of player
+		"""
+		# To Do
+
 	def detectLedgeGround(self, add=0):
 		"""
-		Detect if touch the ledge ground with ledgeGroubdRay and stock data in array
+		Detect if touch the ledge ground with ledgeGroundRay and stock data in array
 		"""
 		ledge_ground, pos, normal = self.ledgeGroundRay(add)
 		# if touch ledge
@@ -81,25 +102,53 @@ class PlayerTester:
 
 	def detectWater(self):
 		"""
-		Detect if touch the ladder
+		Detect if touch the water
+		Else he fall fast ,detect from up also
 		"""
+		isCheck = False
 		prop = "water"
 		water, pos, normal = detect_water_obj.rayCast(self.player, None, 0.2, prop, 0, 1)
 		if (water):
 			self.player.waterPos = pos
-			return True
+			isCheck = True
 		else:
-			return False
+			# Else if can see the from up
+			dw_pos = detect_water_obj.worldPosition
+			pos = [dw_pos[0], dw_pos[1], dw_pos[2] + 1.0]
+			water, pos, normal = detect_water_obj.rayCast(pos, None, 0.5, prop, 0, 1)
+			if (water):
+				self.player.waterPos = pos
+				isCheck = True
+		# return finally statement
+		return isCheck
 
 	def detectLadder(self):
 		"""
-		Detect if touch the ladder
+		Detect if touch the ladder, if detect save ladder data for
+		process the climbLadderSystem
+		Note: Detect ladder from forward
 		"""
 		prop = "ladder"
 		ladder, pos, normal = self.player.rayCast(forward_obj, None, 0.8, prop, 0, 1)
 		if (ladder):
 			self.player.ladderData[0] = ladder
 			self.player.ladderData[1] = normal
+			self.player.audio.setField(ladder['field'])
+			return True
+		else:
+			return False
+
+	def detectLadderBottom(self):
+		"""
+		If detect a ladder from bottom of player
+		"""
+		posTo = [self.player.worldPosition[0], self.player.worldPosition[1], self.player.worldPosition[2] - 1.2]
+		prop = "ladder_top"
+		ladder, pos, normal = self.player.rayCast(posTo, None, 1.3, prop, 0, 1)
+		if (ladder):
+			self.player.ladderData[0] = ladder
+			self.player.ladderData[1] = normal
+			self.player.audio.setField(ladder.parent['field'])
 			return True
 		else:
 			return False
@@ -126,7 +175,7 @@ class PlayerTester:
 
 	def detectPath(self):
 		"""
-		Detect if touch the next level switcher
+		Detect if touch a path follow, can use from switch level
 		"""
 		prop = "path_follow"
 		obj, pos, normal = self.player.rayCast(forward_obj, None, 0.8, prop, 0, 1)
@@ -142,7 +191,7 @@ class PlayerTester:
 		Detect if touch a door
 		"""
 		prop = "door"
-		door, pos, normal = self.player.rayCast(forward_obj, None, 0.8, prop, 0, 1)
+		door, pos, normal = self.player.rayCast(forward_obj, None, 1.5, prop, 0, 1)
 		if (door):
 			# get property
 			self.player.targetObject = door
@@ -159,6 +208,8 @@ class PlayerTester:
 		if (obj):
 			# get property
 			self.player.levelManager.nextLevelName = obj['levelName']
+			logic.globalDict['level']['startPos'] = eval(obj['startPos'])
+			logic.globalDict['level']['targetVec'] = eval(obj['targetVec'])
 			return True
 		else :
 			# test if find from the ground (
@@ -177,12 +228,8 @@ class PlayerTester:
 		# if detect next-level
 		if ( self.detectNextLevelSwitcher() ):
 			# switch state to next level
-			start_levelGapState(self.player)
+			start_switchLevel(self.player)
 			return True
-		# else detect pall folow
-		elif ( self.detectPath()):
-			 start_pathFollowState(self.player)
-			 return True
 		else:
 			 return False
 
@@ -190,6 +237,10 @@ class PlayerTester:
 	# * Hit detector
 	# =================================================================
 	def detectEnemyDamage(self):
+		"""
+		Detect enemy attack, when touch property enemyDamage so the player was hit
+		Save shuffered damage for futur process(Hit effect, etc)
+		"""
 		cont = logic.getCurrentController()
 		sens = cont.sensors['detectDamage']
 		if ( sens.positive and sens.hitObject['enemyDamage'] ):
@@ -198,18 +249,24 @@ class PlayerTester:
 		else:
 			return False
 
+	def swordTouchClang(self):
+		cont = logic.getCurrentController()
+		sens = cont.sensors['sword_touch_clang']
+		if ( sens.positive ):
+			return True
+		else:
+			return False
 	# =================================================================
 	# * Pick Up Detection
 	# =================================================================
 	def detectObjectToPickUp(self):
 		"""
-		Detect if touch the ground from water
+		Detect if can pick a object
 		"""
-		prop = "pickable"
-		testPos = [forward_obj.worldPosition[0], forward_obj.worldPosition[1], forward_obj.worldPosition[2] - 1.0]
-		obj, pos, normal = self.player.rayCast(testPos, None, 2.0, prop, 0, 1)
-		if (obj):
-			self.player.objectPickable = obj
+		cont = logic.getCurrentController()
+		sens = cont.sensors['detectPickable']
+		if sens.positive:
+			self.player.pickManager.pickedObject = sens.hitObject
 			return True
 		else:
 			return False
@@ -219,12 +276,41 @@ class PlayerTester:
 	# =================================================================
 	def detectInteractivePlacard(self):
 		"""
-		Detect if touch the ground from water
+		Detect if can read a placard
 		"""
 		prop = "placard"
 		placard, pos, normal = self.player.rayCast(forward_obj, None, 2.0, prop, 0, 1)
 		if (placard):
 			self.player.interaction.setMessage(placard['message'])
+			return True
+		else:
+			return False
+
+	# =================================================================
+	# * Object Interactiion
+	# =================================================================
+	def detectBloc(self):
+		"""
+		Detect bloc object
+		"""
+		prop = "bloc"
+		bloc, pos, normal = self.player.rayCast(forward_obj, None, 1.0, prop, 0, 1)
+		if (bloc and bloc["bloc"]):
+			self.player.targetObject = bloc
+			self.player.targetObjectData = [pos, normal]
+			return True
+		else:
+			return False
+
+	def detectChest(self):
+		"""
+		Detect chest object
+		"""
+		prop = "chest"
+		chest, pos, normal = self.player.rayCast(forward_obj, None, 1.0, prop, 0, 1)
+		if (chest and chest["open"] == False and chest["alreadyOpen"] == False ):
+			self.player.targetObject = chest
+			self.player.targetObjectData = [pos, normal]
 			return True
 		else:
 			return False

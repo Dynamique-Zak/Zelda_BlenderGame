@@ -1,5 +1,4 @@
 from bge import logic, events
-import pygame
 
 JUST_ACTIVATED = logic.KX_INPUT_JUST_ACTIVATED
 ACTIVE = logic.KX_INPUT_ACTIVE
@@ -27,6 +26,7 @@ class KeyboardController:
 		#
 		self.look = events.SKEY
 		self.target = events.WKEY
+		self.pause = events.AKEY
 		# value smiluation
 		self.axis1 = [0.0, 0.0]
 		self.sensibility = 0.1
@@ -94,6 +94,7 @@ class Gamepad:
 
 		self.joystick = None
 		self.keyboardController = KeyboardController()
+		self.lastButton = None
 		# init joy
 		self.initJoystick()
 
@@ -101,15 +102,21 @@ class Gamepad:
 	# * Joystick part
 	# =================================================================
 	def initJoystick(self):
-		pygame.display.init() # Init pygame display for event
-		pygame.joystick.init() # Initialize joystick module
-		pygame.joystick.get_init() # Verify initialization (boolean)
+		# If joystick is activate in configuration
+		if (logic.globalDict['CONFIGURATION']['useJoystick'] == 1):
+			# Import pygame
+			import pygame
 
-		if ( pygame.joystick.get_count() > 0 ):
-			self.joystick = pygame.joystick.Joystick(0)
-			self.joystick.init()
-			self.joystick.get_init()
-			print("Joystick ", self.joystick.get_name(), " is connected")
+			# Init
+			pygame.display.init() # Init pygame display for event
+			pygame.joystick.init() # Initialize joystick module
+			pygame.joystick.get_init() # Verify initialization (boolean)
+
+			if ( pygame.joystick.get_count() > 0 ):
+				self.joystick = pygame.joystick.Joystick(0)
+				self.joystick.init()
+				self.joystick.get_init()
+				print("Joystick ", self.joystick.get_name(), " is connected")
 
 	def joystickConnected(self):
 		if (self.joystick != None):
@@ -118,7 +125,8 @@ class Gamepad:
 			return False
 
 	def updateJoystick(self):
-		pygame.event.pump()
+		if ( self.joystickConnected() ):
+			pygame.event.pump()
 
 	def joyAxisActive(self):
 		axis = self.getJoyAxis1()
@@ -200,8 +208,8 @@ class Gamepad:
 		axis = self.getJoyAxis1()[0]
 		if (self.keyboardController.keyboard.events[self.keyboardController.left] == state):
 			toLeft = True
-		elif (axis < 0):
-			toLeft = True
+		# elif (axis < 0):
+		# 	toLeft = True
 		return toLeft
 
 	def isRightPressed(self, state=ACTIVE):
@@ -209,22 +217,22 @@ class Gamepad:
 		axis = self.getJoyAxis1()[0]
 		if (self.keyboardController.keyboard.events[self.keyboardController.right] == state):
 			toRight = True
-		elif (axis > 0):
-			toRight = True
+		# elif (axis > 0):
+		# 	toRight = True
 		return toRight
 
 	# * Special keys
-	def isActionPressed(self):
+	def isActionPressed(self, state=ACTIVE):
 		check = False
-		if (self.keyboardController.keyboard.events[self.keyboardController.action] == ACTIVE):
+		if (self.keyboardController.keyboard.events[self.keyboardController.action] == state):
 			check = True
 		elif (self.getJoyButton(3)):
 			check = True
 		return check
 
-	def isAttackPressed(self):
+	def isAttackPressed(self, state=ACTIVE):
 		check = False
-		if (self.keyboardController.keyboard.events[self.keyboardController.attack] == ACTIVE):
+		if (self.keyboardController.keyboard.events[self.keyboardController.attack] == state):
 			check = True
 		elif (self.getJoyButton(2)):
 			check = True
@@ -234,13 +242,14 @@ class Gamepad:
 		if (self.keyboardController.keyboard.events[self.keyboardController.look] == ACTIVE): return True
 		return False
 
-	def isZPressed(self):
+	def isZPressed(self, state=ACTIVE):
 		check = False
-		if (self.keyboardController.keyboard.events[self.keyboardController.target] == ACTIVE):
+		if (self.keyboardController.keyboard.events[self.keyboardController.target] == state):
 			check = True
 		if (self.getJoyButton(Z) ):
 			check = True
 		return check
+
 	# * Items key
 	def isItemXPressed(self, state=JUST_ACTIVATED):
 		check = False
@@ -253,6 +262,14 @@ class Gamepad:
 	def isItemYPressed(self, state=JUST_ACTIVATED):
 		check = False
 		if (self.keyboardController.keyboard.events[self.keyboardController.itemY] == state):
+			check = True
+		elif (self.getJoyButton(1)):
+			check = True
+		return check
+
+	def isPausePressed(self, state=JUST_ACTIVATED):
+		check = False
+		if (self.keyboardController.keyboard.events[self.keyboardController.pause] == state):
 			check = True
 		elif (self.getJoyButton(1)):
 			check = True

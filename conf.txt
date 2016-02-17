@@ -1,0 +1,2 @@
+joystick=0
+active_auto_cam=1

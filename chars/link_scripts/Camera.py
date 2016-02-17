@@ -9,4 +9,7 @@ def obstacle(cont):
 		hitObj = ray.hitObject
 		if hitObj.name != "Link":
 			cam = scene.objects['MainCam']
-			cam.worldPosition = ray.hitPosition
+			logic.camObstaclePosition = ray.hitPosition
+			cam.worldPosition = logic.camObstaclePosition
+	else:
+		logic.camObstaclePosition = None

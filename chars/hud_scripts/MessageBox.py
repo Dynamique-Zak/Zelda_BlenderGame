@@ -7,6 +7,8 @@ import textwrap
 scene = logic.getCurrentScene()
 objects = scene.objects
 
+JUST_ACTIVATED = logic.KX_INPUT_JUST_ACTIVATED
+
 # declare the other object we will used
 finishCursor = objects["msgBox_finishCursor"]
 msgBox_nextCursor = objects["msgBox_nextCursor"]
@@ -43,6 +45,7 @@ class MessageBox(types.KX_GameObject):
 		self.timeWait = 53.0 # is the time to wait in show mode
 		self.stateTime = 0.0
 		self.active = False
+		self.currentObject = None
 		self.etat = DEACTIVATE_STATE
 		self.hide()
 
@@ -58,6 +61,16 @@ class MessageBox(types.KX_GameObject):
 		boxObject.setVisible(False)
 		textObject.setVisible(False)
 		finishCursor.setVisible(False)
+
+	def displayObject(self, obj_name):
+		object_cont = objects["object_cont"]
+		name = obj_name + ".object"
+		#object_cont["display"] = True
+		new = object_cont.scene.objectsInactive[name]
+		self.currentObject = scene.addObject(new, object_cont)
+
+	def removeObject(self):
+		self.currentObject.endObject()
 
 	def display(self):
 		boxObject.setVisible(True)
@@ -125,7 +138,7 @@ class MessageBox(types.KX_GameObject):
 			# reset end index anim for the next text
 			self.currentTextEndIndex = 0
 			result = False
-		textObject['Text'] = textwrap.fill(current_text, 40)
+		textObject['Text'] = textwrap.fill(current_text, 70)
 		return result
 
 	def displayText(self, text, mode=MessageBoxMode.SHOW_TYPE):
@@ -171,7 +184,7 @@ class MessageBox(types.KX_GameObject):
 		# Gamepad
 		gamepad = logic.globalDict['Player']['Gamepad']
 		# wait to input in the next key
-		if ( gamepad.isActionPressed() ):
+		if ( gamepad.isActionPressed(JUST_ACTIVATED) ):
 			self.end_waitInputShowTextState()
 			self.changeNextText()
 			self.switchState(ANIM_SHOW_TEXT_STATE)
@@ -187,6 +200,9 @@ class MessageBox(types.KX_GameObject):
 	def main(self):
 		# Si la message est activé
 		if (self.active):
+			# update object rotation
+			if (self.currentObject != None):
+				self.currentObject.applyRotation([0, 0.05, 0], 1)
 			# text the next state
 			if (self.etat == WAIT_NEXT_TEXT_STATE):
 				self.waitNextTextState()

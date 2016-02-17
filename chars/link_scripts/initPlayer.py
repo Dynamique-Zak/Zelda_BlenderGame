@@ -19,32 +19,68 @@ import sys
 
 #loader = importlib.machinery.SourceFileLoader('PlayerClass.*', filenamePlayer + 'PlayerClass.py')
 #PlayerClass = loader.load_module()
+import os
+import sys
 
 from .AxisOrientation import AxisOrientation
 
-from .PlayerRig import PlayerRig
-from .PlayerPhysic import PlayerPhysic
-from .PlayerClass import Player
-from .PlayerConstants import PlayerState
+from link_scripts.GameInit import initGame
+
+from link_scripts.PlayerRig import PlayerRig
+from link_scripts.PlayerPhysic import PlayerPhysic
+from link_scripts.PlayerClass import Player
+from link_scripts.PlayerConstants import PlayerState
 
 scene = logic.getCurrentScene()
 
+def loadConfFile():
+	if ( not 'CONFIGURATION' in logic.globalDict ):
+		# Create empty configuration
+		logic.globalDict['CONFIGURATION'] = {}
+
+		filename = os.path.dirname( __file__ ) + "/../../conf.txt"
+		print(filename)
+		# Read file content for future modification
+		with open(filename, "r") as myFile:
+			lines = myFile.readlines()
+
+			# Search State part and Constant name
+			for line in lines:
+				token = line.split("=")
+
+				if (token[0] == "joystick"):
+					logic.globalDict['CONFIGURATION']['useJoystick'] = int(token[1])
+
+				if (token[0] == "active_auto_cam"):
+					logic.globalDict['CONFIGURATION']['active_auto_cam'] = int(token[1])
+
 def initPlayer(cont):
+	print("Player initialization")
+	loadConfFile()
+	# Init game
+	logic.camObstaclePosition = None
+
+	initGame()
+
 	#logic.globalDict['SunPos'] = scene.objects['Sun'].worldPosition
 	#
-	logic.globalDict['Player'] = {}
+	if not 'Player' in logic.globalDict:
+		logic.globalDict['Player'] = {}
 
 	own = cont.sensors['player'].owner
 	rig = cont.sensors['arm_sensors'].owner
 	backCam = cont.sensors['backCam_sensors'].owner
 	orientController = scene.objects['orientController']
 
-	groundSens = cont.sensors['groundSens']
-
 	track_orient = cont.actuators['track_orient']
 
+	# Active camera
+	if logic.globalDict['CONFIGURATION']['active_auto_cam'] == 1:
+		print("OK")
+		scene.active_camera = backCam
+
 	# instance physic
-	physic = PlayerPhysic(groundSens)
+	physic = PlayerPhysic()
 
 	# instance rig
 	rig = PlayerRig(rig)
@@ -52,11 +88,26 @@ def initPlayer(cont):
 	# instance axis orient
 	orientController = AxisOrientation(orientController)
 
-	# instance player
+	# Instance player
 	own = Player(own, rig, physic, track_orient, backCam)
 
-	# load data
+	# Load data
 	own.loadData()
+
+	# Init equipement visibility
+	own.fightManager.initEquipement()
+
+	# Start pos from level
+	if ('level' in logic.globalDict):
+		if ('startPos' in logic.globalDict['level']):
+			own.worldPosition = logic.globalDict['level']['startPos']
+			a = logic.globalDict['level']['targetVec']
+			vec = [a[0], a[1], a[2]]
+			own.alignAxisToVect(vec, 0, 1)
+	else:
+		logic.globalDict['level'] = {}
+		vec = [1, 0, 0]
+		own.alignAxisToVect(vec, 0, 1)
 
 	# Add hud scene
 	logic.addScene("HUD")
@@ -74,14 +125,15 @@ def step2(cont):
 	scenes = logic.getSceneList()
 
 	for i in scenes:
-		print(i.name)
 		if i.name == "HUD":
 			hudScene = i
 
+	if 'levelInit' in scene.objects:
+		logic.globalDict['miniMap'] = scene.objects['levelInit']['miniMap']
 	hudScene.objects['HUD']['initHUD'] = True
 	# hud transition
 	#hudScene.setHeart(logic.globalDict['heart'], logic.globalDict['maxHeart'])
-	#logic.playerHUD.fadeOutToHiddenTransition()
+	#hudScene.objects['HUD'].fadeOutToHiddenTransition()
 
 def loadPlayer(cont):
 	own = cont.sensors['player'].owner
@@ -102,8 +154,12 @@ def firstInit(cont):
 	if (logic.globalDict['stepInit'] == 3):
 		step2(cont)
 
+	if (logic.globalDict['stepInit'] == 5):
+		# active fadeout for display
+		logic.playerHUD.setFadeOutTransition(True)
+
 	# step 3 play
-	if (logic.globalDict['stepInit'] == 4):
+	if (logic.globalDict['stepInit'] == 6):
 		logic.globalDict['stepInit'] = 0
 		logic.globalDict['initPlayer'] = True
 		cont.activate('main_state')

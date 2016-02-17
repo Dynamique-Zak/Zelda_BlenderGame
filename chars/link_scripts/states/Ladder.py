@@ -5,6 +5,23 @@ from link_scripts.states.Ledge import pasteToLedgeGround
 # ---------------------------------------------------------------------
 # * Starter state
 # ---------------------------------------------------------------------
+def start_ladderFromTop(self):
+	# set property
+	self.suspendDynamics()
+	self.grounded = False
+	self.onLadder = True
+	# reset state time
+	self.stateTime = 0.0
+	# set pos
+	self.worldPosition[0] = self.ladderData[0].worldPosition[0]
+	self.worldPosition[1] = self.ladderData[0].worldPosition[1]
+	self.worldPosition[2] = self.ladderData[0].worldPosition[2] - 1.2
+	self.orientation = self.ladderData[0].orientation
+	# Animation
+	self.rig.playSetLadderFromTop()
+	# state
+	self.switchState(PlayerState.START_LADDER_TOP_STATE)
+
 def start_climbUpLadderState(self):
 	# reset hud action text
 	#self.playerHUD().resetActionText()
@@ -58,6 +75,14 @@ def isAlignToGround(self):
 # ---------------------------------------------------------------------
 # * States
 # ---------------------------------------------------------------------
+def ladderTopState(self):
+	frame = self.rig.getActionFrame(2)
+	if (frame == 58):
+		parent = self.ladderData[0].parent
+		self.ladderData[0] = parent
+		self.ladderData[1] = parent.orientation
+		self.switchState(PlayerState.WAITLADDER_STATE)
+
 def waitLadderState(self):
 	# increment state time
 	self.playStateTime(1)
@@ -81,9 +106,6 @@ def waitLadderState(self):
 
 		ladder = self.ladderData[0]
 		#set orientation to ledge
-		hit_normal = self.ladderData[1]
-		normal_vec = [-hit_normal[0], -hit_normal[1], hit_normal[2]]
-		self.alignAxisToVect(normal_vec, 1, 1)
 
 def climbToGroundLadderState(self):
 	if ( self.rig.getActionFrame(2) == 39 ):
@@ -102,6 +124,8 @@ def climbToGroundLadderState(self):
 def climbDownLadderState(self):
 	frame = self.rig.getActionFrame(2)
 	if (frame != 0):
+		# play step sound
+		self.audio.playStepSound(self.rig.getActionFrame(2), [6, 14])
 		# if detect the ground from down (the end)
 		if ( self.tester.detectGround()):
 			# climb
@@ -117,6 +141,8 @@ def climbDownLadderState(self):
 def climbUpLadderState(self):
 	frame = self.rig.getActionFrame(2)
 	if (frame != 17):
+		# play step sound
+		self.audio.playStepSound(self.rig.getActionFrame(2), [6, 14])
 		# if detect the ground (the end)
 		if ( self.tester.detectLedgeGround(0.0) and isAlignToGround(self) ):
 			# climb

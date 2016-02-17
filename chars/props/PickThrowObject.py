@@ -9,9 +9,13 @@ class PickThrowObject(types.KX_GameObject):
     def pick(self, parent):
         self.suspendDynamics(True)
         self.worldPosition = parent.worldPosition
+        self.orientation = parent.orientation
         self.setParent(parent)
         self.picked = True
 
+    def end(self):
+        self.endObject()
+        
     def throw(self, throw_force = 0.0):
         self.removeParent()
         self.restoreDynamics()

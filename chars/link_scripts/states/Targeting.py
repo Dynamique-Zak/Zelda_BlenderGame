@@ -1,32 +1,35 @@
-from link_scripts.PlayerConstants import PlayerState
+from link_scripts.PlayerConstants import PlayerState, FlipX
 from link_scripts.states.Hits import start_hitState
-from link_scripts.states.Attack import start_basicSwordAttack1State, start_jumpAttack
+from link_scripts.states.Attack import start_basicSwordAttack1State, start_jumpAttack, start_specialRollState
 
 def start_leftStrafeRollState(self):
-	self.rig.playRightStrafeRoll()
+	self.targetManager.deactiveHeadTrack()
+	self.rig.playStrafeRoll(FlipX.LEFT)
 	# audio
 	self.audio.playJumpSound()
 	self.switchState(PlayerState.LEFT_STRAFE_ROLL_STATE)
 
 def start_rightStrafeRollState(self):
-	self.rig.playRightStrafeRoll()
+	self.targetManager.deactiveHeadTrack()
+	self.rig.playStrafeRoll()
 	# audio
 	self.audio.playJumpSound()
 	self.switchState(PlayerState.RIGHT_STRAFE_ROLL_STATE)
 
 def start_backJump(self):
+	self.targetManager.deactiveHeadTrack()
 	# Animation
 	self.rig.playTargetFallBackJump()
 	self.grounded = False
 	self.stateTime = 0.0
 	# Jump Movement
 	self.linearVelocity[0] = 0.0
-	self.linearVelocity[1] -= 5.0
-	self.linearVelocity[2] += 10.0
+	self.linearVelocity[1] -= 7.0
+	self.linearVelocity[2] += 10.5
 	# audio
 	self.audio.playJumpSound()
 	# Change state
-	self.switchState(PlayerState.FALL_BACK_JUMP)
+	self.switchState(PlayerState.FALL_BACK_JUMP_STATE)
 
 def start_bounceBackJump(self):
 	# Animation
@@ -34,7 +37,7 @@ def start_bounceBackJump(self):
 	self.stopMovement()
 	self.grounded = True
 	# Change state
-	self.switchState(PlayerState.BOUNCE_BACK_JUMP)
+	self.switchState(PlayerState.BOUNCE_BACK_JUMP_STATE)
 
 def endTargetState(self):
 	self.targetManager.deactivateTargetMode()
@@ -48,25 +51,37 @@ def hitFromTarget(self):
 	else :
 		return False
 
+#=================================================================
+# * States
+#=================================================================
 def idleTargetState(self):
 	# Process hit detect from target mode
 	if (hitFromTarget(self)):
 		return
 
-	self.targetManager.activeHeadTrack()
+	if (self.targetManager.active):
+		if (self.targetManager.isHaveTargetObject()):
+			self.targetManager.activeHeadTrack()
+	else:
+		endTargetState(self)
+		self.switchState(PlayerState.IDLE_STATE)
+		return
 	# If respect ground rule
 	if ( self.respectGroundRule(endTargetState) ):
 		# if always found enemy and z key is holded
-		if (self.targetManager.canFindObject() and self.gamepad.isZPressed() ):
+		if (self.targetManager.active and self.gamepad.isZPressed() ):
 			# * Jump attack
-			if (self.gamepad.isActionPressed() and self.armed):
-				start_jumpAttack(self)
+			if (self.gamepad.isActionPressed() and self.fightManager.isUnsheated() ):
+				if (self.targetManager.parry):
+					start_specialRollState(self)
+				else:
+					start_jumpAttack(self)
 				return
 
 			# Basic combo attack
-			if (self.gamepad.isAttackPressed()):
-				if (self.armed == False):
-					self.activeArmedMode()
+			if (self.gamepad.isAttackPressed() and self.fightManager.canUseSword()):
+				if ( not self.fightManager.isUnsheated() ):
+					self.unsheat()
 				else:
 					start_basicSwordAttack1State(self)
 
@@ -75,7 +90,6 @@ def idleTargetState(self):
 			else:
 				self.rig.playTargetIdle()
 		else:
-			self.targetManager.deactivateTargetMode()
 			self.switchState(PlayerState.IDLE_STATE)
 
 def strafeState(self):
@@ -85,7 +99,7 @@ def strafeState(self):
 
 	# If respect ground rule
 	if ( self.respectGroundRule(endTargetState) ):
-		if (self.targetManager.canFindObject() and self.gamepad.isZPressed()):
+		if (self.targetManager.active and self.gamepad.isZPressed()):
 			# if want straff roll
 			if ( self.gamepad.isActionPressed() ):
 				# if go to letf
@@ -99,8 +113,23 @@ def strafeState(self):
 					start_backJump(self)
 			# target movement
 			elif ( self.targetManager.targetMovement(self) ):
-				# play ANIMATION
-				self.rig.playStrafeWard()
+				leftRight = True
+				flip = FlipX.LEFT
+				frames = []
+				if (self.gamepad.isLeftPressed()):
+					flip = FlipX.LEFT
+					frames = [102, 103]
+				elif (self.gamepad.isRightPressed()):
+					flip = FlipX.RIGHT
+					frames = [116, 117]
+				# Play animation
+				frame = self.rig.getActionFrame(5)
+				if (leftRight):
+					self.rig.playStrafeWard(flip)
+					# Play sound
+					self.audio.playStepSound(frame, frames)
+				else:
+					self.rig.playRun()
 			else:
 				self.switchState(PlayerState.IDLE_TARGET_STATE)
 		else:
@@ -112,7 +141,7 @@ def leftStrafeRollState(self):
 		return
 
 	# if ANIMATION
-	if ( self.rig.getActionFrame(5) == 40):
+	if ( not self.rig.isPlayingAction(5) ):
 		# go idle strafe
 		self.stopMovement()
 		self.switchState(PlayerState.IDLE_TARGET_STATE)
@@ -126,7 +155,7 @@ def rightStrafeRollState(self):
 		return
 
 	# if ANIMATION
-	if ( self.rig.getActionFrame(5) == 40):
+	if ( not self.rig.isPlayingAction(5) ):
 		# go idle strafe
 		self.stopMovement()
 		self.switchState(PlayerState.IDLE_TARGET_STATE)
@@ -142,8 +171,8 @@ def fallBackJump(self):
 		hitFromTarget(self)
 
 def bounceBackJump(self):
-	frame = self.rig.getActionFrame(5)
-	if (frame == 18):
+	if ( not self.rig.isPlayingAction(5)):
+		self.rig.playBasePose()
 		self.stopMovement()
 		self.switchState(PlayerState.IDLE_TARGET_STATE)
 	else:
