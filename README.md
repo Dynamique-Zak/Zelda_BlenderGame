@@ -17,10 +17,10 @@ LINUX/UNIX - XUbuntu 64 bits
 
 ##Outils
 
--Graphisme2D/Texture : Gimp
--Modélisation, Texturage, Animations : Blender 3D
--Moteur de jeu : BGE
--Langage de programmation : Python
+- Graphisme2D/Texture : Gimp
+- Modélisation, Texturage, Animations : Blender 3D
+- Moteur de jeu : BGE
+- Langage de programmation : Python
 
 ##Notice
 
