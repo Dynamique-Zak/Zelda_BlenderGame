@@ -1,4 +1,4 @@
-#Zelda_BlenderGame [Mise à jour du 17-03-2016]
+#Zelda_BlenderGame [Mise à jour du 17-02-2016]
 
 Voici un zelda fan make sur le Blender Game Engine. Une majorité du développement à été fait avec du Python.
 
